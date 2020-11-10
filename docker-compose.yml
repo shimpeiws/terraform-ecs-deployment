@@ -1,0 +1,12 @@
+version: "3"
+
+services:
+  terraform-ecs:
+    image: hashicorp/terraform:0.13.3
+    volumes:
+      - ./:/workdir
+    working_dir: "/workdir/ecs/dev"
+    environment:
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - AWS_REGION
