@@ -65,30 +65,3 @@ resource "aws_security_group" "security-group" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
-
-resource "aws_vpc_endpoint" "ecr_api" {
-  service_name        = "com.amazonaws.ap-northeast-1.ecr.api"
-  vpc_endpoint_type   = "Interface"
-  vpc_id              = aws_vpc.vpc.id
-  subnet_ids          = [aws_subnet.private-0.id, aws_subnet.private-1.id]
-  security_group_ids  = [aws_security_group.security-group.id]
-  private_dns_enabled = true
-}
-
-resource "aws_vpc_endpoint" "ecr_dkr" {
-  service_name        = "com.amazonaws.ap-northeast-1.ecr.dkr"
-  vpc_endpoint_type   = "Interface"
-  vpc_id              = aws_vpc.vpc.id
-  subnet_ids          = [aws_subnet.private-0.id, aws_subnet.private-1.id]
-  security_group_ids  = [aws_security_group.security-group.id]
-  private_dns_enabled = true
-}
-
-resource "aws_vpc_endpoint" "ecr_logs" {
-  service_name        = "com.amazonaws.ap-northeast-1.logs"
-  vpc_endpoint_type   = "Interface"
-  vpc_id              = aws_vpc.vpc.id
-  subnet_ids          = [aws_subnet.private-0.id, aws_subnet.private-1.id]
-  security_group_ids  = [aws_security_group.security-group.id]
-  private_dns_enabled = true
-}
