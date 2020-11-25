@@ -66,3 +66,38 @@ resource "aws_ecs_service" "ecs-service" {
     ignore_changes = [desired_count]
   }
 }
+
+resource "aws_appautoscaling_target" "ecs-target" {
+  min_capacity = 2
+  max_capacity = 2
+  resource_id        = "service/${aws_ecs_cluster.ecs-cluster.name}/${aws_ecs_service.ecs-service.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
+}
+
+resource "aws_appautoscaling_scheduled_action" "ecs-scale-down" {
+  name               = "ecs-appautoscaling-scale-down-${var.env_name}"
+  service_namespace  = aws_appautoscaling_target.ecs-target.service_namespace
+  resource_id        = aws_appautoscaling_target.ecs-target.resource_id
+  scalable_dimension = aws_appautoscaling_target.ecs-target.scalable_dimension
+  schedule           = "cron(0 12 * * ? *)"
+
+  scalable_target_action {
+    min_capacity = 1
+    max_capacity = 1
+  }
+}
+
+resource "aws_appautoscaling_scheduled_action" "ecs-scale-up" {
+  name               = "ecs-appautoscaling-scale-up-${var.env_name}"
+  service_namespace  = aws_appautoscaling_target.ecs-target.service_namespace
+  resource_id        = aws_appautoscaling_target.ecs-target.resource_id
+  scalable_dimension = aws_appautoscaling_target.ecs-target.scalable_dimension
+  schedule           = "cron(0 23 * * ? *)"
+
+  scalable_target_action {
+    min_capacity = 2
+    max_capacity = 2
+  }
+}
+
