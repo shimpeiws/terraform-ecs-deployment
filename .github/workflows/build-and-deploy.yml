@@ -1,0 +1,48 @@
+name: Deploy
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build docker file adn Push to ECR
+        run: |
+          TAG_NAME=${GITHUB_SHA}
+          CONTAINER_NAME=app-container
+          docker build -t ${{ secrets.ECR_REPOSITORY_URL }}:${TAG_NAME} ./app
+          docker push ${{ secrets.ECR_REPOSITORY_URL }}:${TAG_NAME}
+
+      - name: Install aws-cli
+        uses: chrislennon/action-aws-cli@v1.1
+
+      - name: Set ECR URL to parameter store
+        run: |
+          TAG_NAME=${GITHUB_SHA}
+          aws ssm put-parameter \
+          --name "/code-pipeline-deployment/ecr-repository-url" \
+          --description "Latest docker build in ECR" \
+          --type "String" \
+          --value ${{ secrets.ECR_REPOSITORY_URL }}:${TAG_NAME} \
+          --overwrite
+
+      - name: Start pipeline execution
+        run: |
+          aws codepipeline start-pipeline-execution \
+          --name "codepipeline-with-approval"
