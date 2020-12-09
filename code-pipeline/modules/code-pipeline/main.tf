@@ -10,7 +10,7 @@ data "aws_iam_policy_document" "code_build_assume_role_policy" {
 }
 
 resource "aws_iam_role" "code_build_role" {
-  name               = "code-build-role"
+  name               = "code-build-role-${var.env_name}"
   assume_role_policy = data.aws_iam_policy_document.code_build_assume_role_policy.json
 }
 
@@ -50,7 +50,7 @@ resource "aws_codebuild_source_credential" "github" {
 
 
 resource "aws_codebuild_project" "plan" {
-  name          = "${var.code_build_project_name}-terraform-plan"
+  name          = "${var.code_build_project_name}-terraform-plan-${var.env_name}"
   description   = "code build for terraform plan"
   build_timeout = "60"
   service_role  = aws_iam_role.code_build_role.arn
@@ -80,7 +80,7 @@ resource "aws_codebuild_project" "plan" {
 }
 
 resource "aws_codebuild_project" "apply" {
-  name          = "${var.code_build_project_name}-terraform-apply"
+  name          = "${var.code_build_project_name}-terraform-apply-${var.env_name}"
   description   = "code build for apply"
   build_timeout = "60"
   service_role  = aws_iam_role.code_build_role.arn
@@ -121,7 +121,7 @@ data "aws_iam_policy_document" "codepipeline_assume_role" {
 }
 
 resource "aws_iam_role" "codepipeline_role" {
-  name               = "codepipeline-role"
+  name               = "codepipeline-role-${var.env_name}"
   assume_role_policy = data.aws_iam_policy_document.codepipeline_assume_role.json
 }
 
@@ -172,7 +172,7 @@ data "aws_kms_alias" "s3kmskey" {
 }
 
 resource "aws_codepipeline" "without_approval" {
-  name     = "codepipeline-without-approval"
+  name     = "codepipeline-without-approval-${var.env_name}"
   count    = var.need_approval ? 0 : 1
   role_arn = aws_iam_role.codepipeline_role.arn
 
@@ -242,7 +242,7 @@ resource "aws_codepipeline" "without_approval" {
 }
 
 resource "aws_codepipeline" "with_approval" {
-  name     = "codepipeline-with-approval"
+  name     = "codepipeline-with-approval-${var.env_name}"
   count    = var.need_approval ? 1 : 0
   role_arn = aws_iam_role.codepipeline_role.arn
 
