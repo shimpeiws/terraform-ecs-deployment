@@ -277,18 +277,6 @@ resource "aws_codepipeline" "with_approval" {
   }
 
   stage {
-    name = "Approval"
-
-    action {
-      name     = "Approval"
-      category = "Approval"
-      owner    = "AWS"
-      provider = "Manual"
-      version  = "1"
-    }
-  }
-
-  stage {
     name = "Plan"
 
     action {
@@ -302,6 +290,18 @@ resource "aws_codepipeline" "with_approval" {
       configuration = {
         ProjectName = aws_codebuild_project.plan.name
       }
+    }
+  }
+
+  stage {
+    name = "Approval"
+
+    action {
+      name     = "Approval"
+      category = "Approval"
+      owner    = "AWS"
+      provider = "Manual"
+      version  = "1"
     }
   }
 
