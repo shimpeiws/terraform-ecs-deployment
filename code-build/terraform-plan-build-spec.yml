@@ -8,6 +8,6 @@ phases:
   build:
     commands:
       - echo ECR_REPOSITORY_URL:${ECR_REPOSITORY_URL}
-      - cd ecs
+      - cd ./ecs/dev
       - terraform init
-      - terraform plan -var 'image_uri=${ECR_REPOSITORY_URL}'
+      - terraform plan -var "image_uri=$ECR_REPOSITORY_URL"
