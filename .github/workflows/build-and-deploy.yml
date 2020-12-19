@@ -49,4 +49,4 @@ jobs:
       - name: Start pipeline execution
         run: |
           aws codepipeline start-pipeline-execution \
-          --name "codepipeline-with-approval"
+          --name "codepipeline-with-approval-dev"

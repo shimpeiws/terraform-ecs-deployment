@@ -10,4 +10,4 @@ phases:
       - echo ECR_REPOSITORY_URL:${ECR_REPOSITORY_URL}
       - cd ./ecs/dev
       - terraform init
-      - terraform apply -var "image_uri=$ECR_REPOSITORY_URL"
+      - terraform apply -var "image_uri=$ECR_REPOSITORY_URL" -auto-approve

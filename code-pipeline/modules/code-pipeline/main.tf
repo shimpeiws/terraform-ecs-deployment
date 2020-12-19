@@ -17,30 +17,7 @@ resource "aws_iam_role" "code_build_role" {
 data "aws_iam_policy_document" "code_build_policy" {
   statement {
     effect = "Allow"
-    actions = [
-      "logs:CreateLogGroup",
-      "logs:CreateLogStream",
-      "logs:PutLogEvents"
-    ]
-    resources = ["*"]
-  }
-
-  statement {
-    effect = "Allow"
-    actions = [
-      "s3:GetObject",
-      "s3:GetObjectVersion",
-      "s3:GetBucketVersioning",
-      "s3:PutObject"
-    ]
-    resources = ["*"]
-  }
-
-  statement {
-    effect = "Allow"
-    actions = [
-      "ssm:GetParameters"
-    ]
+    actions = ["*"]
     resources = ["*"]
   }
 }
