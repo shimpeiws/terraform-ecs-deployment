@@ -10,7 +10,7 @@ data "aws_iam_policy_document" "code_build_assume_role_policy" {
 }
 
 resource "aws_iam_role" "code_build_role" {
-  name               = "code-build-role"
+  name               = "ecs-code-build-role-${var.env_name}"
   assume_role_policy = data.aws_iam_policy_document.code_build_assume_role_policy.json
 }
 
@@ -35,6 +35,14 @@ data "aws_iam_policy_document" "code_build_policy" {
     ]
     resources = ["*"]
   }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "ssm:GetParameters"
+    ]
+    resources = ["*"]
+  }
 }
 
 resource "aws_iam_role_policy" "code_build_policy" {
@@ -50,7 +58,7 @@ resource "aws_codebuild_source_credential" "github" {
 
 
 resource "aws_codebuild_project" "plan" {
-  name          = "${var.code_build_project_name}-terraform-plan"
+  name          = "${var.code_build_project_name}-terraform-plan-${var.env_name}"
   description   = "code build for terraform plan"
   build_timeout = "60"
   service_role  = aws_iam_role.code_build_role.arn
@@ -80,7 +88,7 @@ resource "aws_codebuild_project" "plan" {
 }
 
 resource "aws_codebuild_project" "apply" {
-  name          = "${var.code_build_project_name}-terraform-apply"
+  name          = "${var.code_build_project_name}-terraform-apply-${var.env_name}"
   description   = "code build for apply"
   build_timeout = "60"
   service_role  = aws_iam_role.code_build_role.arn
@@ -121,7 +129,7 @@ data "aws_iam_policy_document" "codepipeline_assume_role" {
 }
 
 resource "aws_iam_role" "codepipeline_role" {
-  name               = "codepipeline-role"
+  name               = "ecs-codepipeline-role-${var.env_name}"
   assume_role_policy = data.aws_iam_policy_document.codepipeline_assume_role.json
 }
 
@@ -155,6 +163,14 @@ data "aws_iam_policy_document" "code_pipeline_policy" {
     ]
     resources = ["*"]
   }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "ssm:GetParameters"
+    ]
+    resources = ["*"]
+  }
 }
 
 resource "aws_iam_role_policy" "code_pipeline_policy" {
@@ -163,7 +179,7 @@ resource "aws_iam_role_policy" "code_pipeline_policy" {
 }
 
 resource "aws_s3_bucket" "artifact" {
-  bucket = "${var.code_pipeline_project_name}-s3-artifact"
+  bucket = "${var.code_pipeline_project_name}-s3-artifact-${var.env_name}"
   acl    = "private"
 }
 
@@ -242,7 +258,7 @@ resource "aws_codepipeline" "without_approval" {
 }
 
 resource "aws_codepipeline" "with_approval" {
-  name     = "codepipeline-with-approval"
+  name     = "codepipeline-with-approval-${var.env_name}"
   count    = var.need_approval ? 1 : 0
   role_arn = aws_iam_role.codepipeline_role.arn
 

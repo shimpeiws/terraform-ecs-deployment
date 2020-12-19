@@ -1,6 +1,6 @@
-# terraform-efs-sls-deployment
+# terraform-ecs-deployment
 
-## Create efs using terraform
+terraform-ecs-deployment
 
 `docker-compose run --rm terraform-ecs init`
 
