@@ -1,7 +1,13 @@
 version: 0.2
 
+env:
+  parameter-store:
+    ECR_REPOSITORY_URL: "/code-pipeline-deployment/ecr-repository-url"
+
 phases:
   build:
     commands:
+      - echo ECR_REPOSITORY_URL:${ECR_REPOSITORY_URL}
+      - cd ecs
       - terraform init
-      - terraform plan
+      - terraform plan -var 'image_uri=${ECR_REPOSITORY_URL}'
