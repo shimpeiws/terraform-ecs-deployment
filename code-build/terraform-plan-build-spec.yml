@@ -10,5 +10,5 @@ phases:
       - echo ECR_REPOSITORY_URL:${ECR_REPOSITORY_URL}
       - cd ./ecs/dev
       - terraform init
-      - terraform state rm aws_ecs_task_definition.ecs-task-definition
+      - terraform state rm module.ecs.aws_ecs_task_definition.ecs-task-definition
       - terraform plan -var "image_uri=${ECR_REPOSITORY_URL}"
